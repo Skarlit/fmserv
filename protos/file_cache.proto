@@ -1,0 +1,21 @@
+syntax = "proto2";
+
+option java_package = "protos";
+
+option java_outer_classname = "FileCacheProtos";
+
+message File {
+    optional string name = 1;
+    optional bool is_directory = 2;
+    repeated string path = 3;
+    optional int64 created_date = 4;
+    optional int64 modified_date = 5;
+    optional int64 size = 6;
+}
+
+message FileSet {
+    repeated File file = 1;
+}
+
+
+
