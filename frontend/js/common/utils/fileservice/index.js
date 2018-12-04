@@ -15,6 +15,9 @@ module.exports = {
         await serviceInstance.init(opts);
         return serviceInstance;
     },
+    get: (path) => {
+        
+    },
     getServiceInstance: () => {
         if (!serviceInstance) {
             throw 'Need to start service first';
