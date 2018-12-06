@@ -1,7 +1,9 @@
 import React from "react";
 import 'react-table/react-table.css';
+import {withRouter} from 'react-router'
 import { connect } from 'react-redux';
 import FileList from '../Components/FileList';
+import { encodeURIString, reactRouterLinkEncodeURIString } from "../../common/utils/Utility";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Actions, Selectors } from '../Reducers/FileExplorerReducer'
 import Icon from "../Components/Icon";
@@ -40,33 +42,44 @@ class FileExplorer extends React.Component {
         }
     }
     render() { 
-        
         const columns = [{
-            Header: '',
+            Header: 'S',
             accessor: 'size',
             id: 'size',
-            maxWidth: 60,
+            maxWidth: 38,
             Cell: row => (
-
-                <div>
-                  {row.value == 0 ? <Icon size="1x" type="FOLDER"/> : <SizeCell>{row.value}</SizeCell>}
-                  <DateCell>{row.original.createdDate}</DateCell>
-                </div>
-            )
+                row.original.isDirectory ? <Icon size="1x" type="FOLDER"/> : <SizeCell>{row.value}</SizeCell>
+            ),
+        }, {
+            // id: 'friendName', // Required because our accessor is not a string
+            Header: 'D',
+            accessor: 'createdDate', // Custom value accessors!
+            id: 'createdDate',
+            maxWidth: 38,
+            Cell: row => <DateCell>{row.original.createdDate}</DateCell>
+        }, {
+            Header: 'Dir',
+            show: false,
+            accessor: 'isDirectory',
+            id: 'isDir',
+            sortMethod: (a, b) => {
+                if (a && b) {
+                    return 0
+                }
+                if (a) return 1;
+                if (b) return -1;
+            }
         }, {
             Header: 'Name',
             accessor: 'name', // String-based value accessors!
-            Cell: row => (
-                row.original.isDirectory ?
-                <Link to={`/browse/${this.props.path}/${row.value}`}>{row.value}</Link> :
-                <a href={`/api/file/download?path=${this.props.path}/${row.value}`}>{row.value}</a>
-            )
-        }, {
-            // id: 'friendName', // Required because our accessor is not a string
-            Header: 'Created',
-            accessor: 'createdDate', // Custom value accessors!
-            id: 'createdDate',
-            show: false,
+            style: {
+                fontSize: '10px',
+            },
+            Cell: row => {
+                return row.original.isDirectory ?
+                <Link to={`/browse/${this.props.path}/${reactRouterLinkEncodeURIString(row.value)}`} >{row.value}</Link> :
+                <a href={`/api/file/download?path=${this.props.path}/${encodeURIString(row.value)}`}>{row.value}</a>
+            }
         }];
         return <ReactTable 
             data={this.props.files && this.props.files.toArray()} 
@@ -74,7 +87,17 @@ class FileExplorer extends React.Component {
             loading={this.props.files == null}
             minRows={0}
             getTheadThProps={() =>({style: {textAlign: 'left'}})}
+            sorted={[
+                {
+                    id: 'isDir',
+                    desc: true,
+                },
+            ]}
             defaultSorted={[
+                {
+                    id: 'isDir',
+                    desc: true,
+                },
                 {
                     id: 'size',
                     desc: false,
@@ -87,4 +110,4 @@ class FileExplorer extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(FileExplorer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FileExplorer));

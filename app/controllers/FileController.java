@@ -109,12 +109,14 @@ public class FileController extends BaseController {
         }
 
         long contentLength = end - start + 1;
+        String returnContentRange = String.format("bytes %d-%d/%d", start, end, fileSize);
+
         Source<ByteString, ?> source = FileIO.fromPath(Paths.get(sanitizedPath), (int) contentLength, start);
+
         return new Result(
                 new ResponseHeader(206, ImmutableMap.of(
                     "Accept-Ranges", "bytes",
-                    "Content-Range",  String.format("bytes %d-%d/%d", start, end, fileSize),  // Without this field, it won't work
-                    "Range",  String.format("bytes %d-%d/%d", start, end, fileSize) // As a fail-safe field.
+                    "Content-Range", returnContentRange  // Without this field, it won't work
                 )),
                 new HttpEntity.Streamed(source, Optional.of(contentLength), Optional.of(mimeType))
         );

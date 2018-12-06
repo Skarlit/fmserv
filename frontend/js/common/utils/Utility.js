@@ -62,13 +62,25 @@ function getTimestampFromMs(ms) {
 
 function encodeURIParts(s) {
     return s.split('/').filter((e) => e !== "")
-        .map(part => encodeURIComponent(part))
+        .map(part => encodeURIString(part))
         .join('/');
+}
+
+function encodeURIString(s) {
+    return encodeURIComponent(s);
+}
+
+function reactRouterLinkEncodeURIString(s) {
+                    // React Router decode the string before pushing it to history. So need to double encode.
+                // https://stackoverflow.com/questions/48523058/encoding-uri-using-link-of-react-router-dom-not-working
+    return encodeURIComponent(encodeURIComponent(s));
 }
 
 module.exports = {
     getFileType: getFileType,
     getReadableSize: getReadableSize,
     getTimestampFromMs: getTimestampFromMs,
-    encodeURIParts: encodeURIParts
+    encodeURIParts: encodeURIParts,
+    encodeURIString: encodeURIString,
+    reactRouterLinkEncodeURIString: reactRouterLinkEncodeURIString
 }

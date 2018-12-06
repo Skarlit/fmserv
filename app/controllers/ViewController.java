@@ -36,4 +36,8 @@ public class ViewController extends BaseController {
         return ok(views.html.index.render("SFS", env.isDev(), path));
     }
 
+    public Result untrail(String path) {
+        return movedPermanently("/" + path);
+    }
+
 }
