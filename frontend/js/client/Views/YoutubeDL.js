@@ -14,7 +14,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormControl from '@material-ui/core/FormControl'
 import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
-import { MenuItem, Button } from '@material-ui/core';
+import { MenuItem, Button, Card, CardMedia, CardContent, CardHeader } from '@material-ui/core';
 import Request from '../Common/Request';
 
 const YOUTUBE_LINK_REGEX = /.*?v=([^&]+)?/
@@ -105,12 +105,26 @@ export default class YoutubeDL extends Component {
                     {this.renderFormatSelection()}
                 </Grid>
                 <Grid>
+                    {this.renderVideoInfoCard()}
+                </Grid>
+                <Grid>
                     <Button className={css(styles.button)} variant="contained" color="primary">
                         Download
                     </Button>
                 </Grid>
             </div>
         )
+    }
+
+    renderVideoInfoCard() {
+        if (this.state.videoInfo) {
+            let {thumbnail_width, thumbnail_height, title, thumbnail_url, author_name} = this.state.videoInfo;
+            return <Card>
+                <CardHeader title={title} />
+                <CardMedia image={thumbnail_url} style={{width: thumbnail_width, height: thumbnail_height}}/>
+                <CardContent>{author_name}</CardContent>
+            </Card>
+        }
     }
 
     renderFormatSelection() {
